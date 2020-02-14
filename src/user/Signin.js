@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Redirect} from "react-router-dom";
+import {signin, authenticateUser} from "../auth";
 
 class Signin extends Component {
 
@@ -26,29 +27,16 @@ class Signin extends Component {
         const user = {
             email, password
         };
-        this.signin(user).then(data => {
+        signin(user).then(data => {
             if (data.error) {
                 this.setState({error: data.error, loading: false});
             } else {
                 //authenticate and redirect user to the intending page
-                this.authenticateUser(data, () => {
+                authenticateUser(data, () => {
                     this.setState({redirectToReferer: true})
                 });
             }
         });
-    };
-
-    signin = (user) => {
-        return fetch('http://localhost:5000/signin', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        }).then(response => {
-            return response.json()
-        }).catch(err => console.log(err))
     };
 
     signInForm = (email, password) => (
@@ -69,13 +57,6 @@ class Signin extends Component {
             </button>
         </form>
     );
-
-    authenticateUser(data, next) {
-        if (typeof window !== 'undefined') {
-            localStorage.setItem("token", JSON.stringify(data));
-            next()
-        }
-    }
 
     render() {
         const {email, password, error, redirectToReferer, loading} = this.state;
