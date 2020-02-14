@@ -1,15 +1,16 @@
 import React, {Component} from 'react';
+import {Redirect} from "react-router-dom";
 
-class Signup extends Component {
+class Signin extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            name: '',
             email: '',
             password: '',
             error: '',
-            open: false
+            redirectToReferer: false,
+            loading: false
         }
     }
 
@@ -20,24 +21,25 @@ class Signup extends Component {
 
     clickSubmit = event => {
         event.preventDefault();
-        const {name, email, password} = this.state;
+        this.setState({loading: true});
+        const {email, password} = this.state;
         const user = {
-            name, email, password
+            email, password
         };
-        this.signup(user).then(data => {
-            if (data.error) this.setState({error: data.error});
-            else this.setState({
-                error: '',
-                name: '',
-                email: '',
-                password: '',
-                open: true
-            })
-        })
+        this.signin(user).then(data => {
+            if (data.error) {
+                this.setState({error: data.error, loading: false});
+            } else {
+                //authenticate and redirect user to the intending page
+                this.authenticateUser(data, () => {
+                    this.setState({redirectToReferer: true})
+                });
+            }
+        });
     };
 
-    signup = (user) => {
-        return fetch('http://localhost:5000/signup', {
+    signin = (user) => {
+        return fetch('http://localhost:5000/signin', {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
@@ -49,14 +51,8 @@ class Signup extends Component {
         }).catch(err => console.log(err))
     };
 
-    signUpForm = (name, email, password) => (
+    signInForm = (email, password) => (
         <form>
-            <div className="form-group">
-                <label className="text-muted">Name</label>
-                <input onChange={this.handleChange('name')} type="text"
-                       className="form-control"
-                       value={name}/>
-            </div>
             <div className="form-group">
                 <label className="text-muted">Email</label>
                 <input onChange={this.handleChange('email')} type="email"
@@ -74,24 +70,37 @@ class Signup extends Component {
         </form>
     );
 
+    authenticateUser(data, next) {
+        if (typeof window !== 'undefined') {
+            localStorage.setItem("token", JSON.stringify(data));
+            next()
+        }
+    }
+
     render() {
-        const {name, email, password, error, open} = this.state;
+        const {email, password, error, redirectToReferer, loading} = this.state;
+
+        if (redirectToReferer) {
+            return <Redirect to='/'/>
+        }
+
         return (
             <div className='container'>
                 <div className="row justify-content-center">
                     <div className="col-sm-6 col-md-7">
                         <div className="card mt-5 mb-5">
                             <div className="card-header text-center" style={{color: 'green'}}>
-                                <b>SIGN UP</b>
+                                <b>SIGN IN</b>
                             </div>
                             <div className="card-body">
                                 <div className="alert alert-danger" style={{display: error ? '' : 'none'}}>
                                     {error}
                                 </div>
-                                <div className="alert alert-info" style={{display: open ? '' : 'none'}}>
-                                    New Account created successfully. Please sign in.
-                                </div>
-                                {this.signUpForm(name, email, password)}
+                                {loading ? (
+                                    <div className='jumbotron text-center'>
+                                        <h6>Loading...</h6>
+                                    </div>) : ('')}
+                                {this.signInForm(email, password)}
                             </div>
                         </div>
                     </div>
@@ -101,4 +110,5 @@ class Signup extends Component {
     }
 }
 
-export default Signup;
+export default Signin;
+
