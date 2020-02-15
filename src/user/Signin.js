@@ -31,7 +31,6 @@ class Signin extends Component {
             if (data.error) {
                 this.setState({error: data.error, loading: false});
             } else {
-                //authenticate and redirect user to the intending page
                 authenticateUser(data, () => {
                     this.setState({redirectToReferer: true})
                 });

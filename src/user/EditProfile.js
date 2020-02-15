@@ -13,7 +13,9 @@ class EditProfile extends Component {
             email: '',
             password: '',
             redirectToProfile: false,
-            error: ''
+            error: '',
+            fileSize: 0,
+            loading: false
         }
     }
 
@@ -29,12 +31,18 @@ class EditProfile extends Component {
     };
 
     componentDidMount() {
+        this.userData = new FormData();
         const userId = this.props.match.params.userId;
         this.init(userId);
     }
 
     signUpForm = (name, email, password) => (
         <form>
+            <div className="form-group">
+                <label className="text-muted">Profile Photo</label>
+                <input onChange={this.handleChange('photo')} type="file" accept='image/*'
+                       className="form-control"/>
+            </div>
             <div className="form-group">
                 <label className="text-muted">Name</label>
                 <input onChange={this.handleChange('name')} type="text"
@@ -58,21 +66,25 @@ class EditProfile extends Component {
         </form>
     );
 
-    handleChange = (inputText) => event => {
+    handleChange = inputText => event => {
         this.setState({error: ''});
-        this.setState({[inputText]: event.target.value})
+        let value = inputText === 'photo' ? event.target.files[0] : event.target.value;
+        if (value != null){
+            const fileSize = inputText === 'photo' ? event.target.files[0].size : 0;
+            this.userData.set(inputText, value);
+            this.setState({[inputText]: value, fileSize})
+        } else {
+            this.setState({error: 'No file selected'})
+        }
     };
 
     clickSubmit = event => {
         event.preventDefault();
-        if (this.isValid()){
-            const {name, email, password} = this.state;
-            const user = {
-                name, email, password: password || undefined
-            };
+        this.setState({loading: true});
+        if (this.isValid()) {
             const userId = this.props.match.params.userId;
             const token = isAuthenticated().token;
-            update(userId, token, user).then(data => {
+            update(userId, token, this.userData).then(data => {
                 if (data.error) this.setState({error: data.error});
                 else this.setState({
                     redirectToProfile: true
@@ -82,16 +94,20 @@ class EditProfile extends Component {
     };
 
     isValid = () => {
-        const{name, email, password} = this.state;
-        if (name.length === 0){
+        const {name, email, password, fileSize} = this.state;
+        if (fileSize > 100000) {
+            this.setState({error: 'File size should be less than 100Kb', loading: false});
+            return false
+        }
+        if (name.length === 0) {
             this.setState({error: 'Name cannot be empty'});
             return false
         }
-        if (!/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(email)){
+        if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
             this.setState({error: 'Invalid email address'});
             return false
         }
-        if (password.length >= 1 && password.length <=5){
+        if (password.length >= 1 && password.length <= 5) {
             this.setState({error: 'Password too short'});
             return false
         }
@@ -99,7 +115,7 @@ class EditProfile extends Component {
     };
 
     render() {
-        const {id, name, email, password, redirectToProfile, error} = this.state;
+        const {id, name, email, password, redirectToProfile, error, loading} = this.state;
         if (redirectToProfile) {
             return <Redirect to={`/users/${id}`}/>
         }
@@ -114,6 +130,10 @@ class EditProfile extends Component {
                                 <div className="alert alert-danger" style={{display: error ? '' : 'none'}}>
                                     {error}
                                 </div>
+                                {loading ? (
+                                    <div className='jumbotron text-center'>
+                                        <h6>Loading...</h6>
+                                    </div>) : ('')}
                                 {this.signUpForm(name, email, password)}
                             </div>
                         </div>
