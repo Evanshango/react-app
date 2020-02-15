@@ -61,20 +61,29 @@ class Profile extends Component {
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <div className="lead mt-4">
-                            <p>Hello {user.name}</p>
-                            <p>Email: {user.email}</p>
-                            <p>{`Joined ${new Date(user.created).toDateString()}`}</p>
-                        </div>
-                        {isAuthenticated().user && isAuthenticated().user._id === user._id && (
-                            <div className="d-inline-block mt-3">
-                                <Link
-                                    className='btn btn-raised btn-sm btn-success mr-3' to={`/users/edit/${user._id}`}>
-                                    Edit Profile
-                                </Link>
-                                <DeleteUser userId={user._id}/>
+                        <div className="card">
+                            <div className="lead mt-4 ml-4">
+                                <p>Hello {user.name}</p>
+                                <p>Email: {user.email}</p>
+                                <p>{`Joined ${new Date(user.created).toDateString()}`}</p>
                             </div>
-                        )}
+                            {isAuthenticated().user && isAuthenticated().user._id === user._id && (
+                                <div className="d-inline-block mt-3 ml-4 mb-4 text-center">
+                                    <Link
+                                        className='btn btn-raised btn-sm btn-success mr-5' to={`/users/edit/${user._id}`}>
+                                        Edit Profile
+                                    </Link>
+                                    <DeleteUser userId={user._id}/>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-md-12 col-sm-12">
+                        <hr/>
+                        <p className="lead ml-3 mt-3 mb-3">{user.about}</p>
+                        <hr/>
                     </div>
                 </div>
             </div>

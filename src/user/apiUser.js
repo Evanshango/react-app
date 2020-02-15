@@ -33,7 +33,6 @@ export const remove = (userId, token) => {
 };
 
 export const update = (userId, token, user) => {
-    console.log('USER UPDATE DATA: ', user);
     return fetch(`${process.env.REACT_APP_BASE_URL}/users/update/${userId}`, {
         method: 'PUT',
         headers: {
@@ -44,4 +43,20 @@ export const update = (userId, token, user) => {
     }).then(response => {
         return response.json();
     }).catch(err => console.log(err));
+};
+
+export const updateUser = (user, next) => {
+    let newUser = {
+        _id: user.user._id,
+        email: user.user.email,
+        name: user.user.name
+    };
+    if (typeof window !== 'undefined') {
+        if (localStorage.getItem('token')) {
+            let auth = JSON.parse(localStorage.getItem('token'));
+            auth.user = newUser;
+            localStorage.setItem('token', JSON.stringify(auth));
+            next()
+        }
+    }
 };

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {isAuthenticated} from "../auth";
-import {read, update} from "./apiUser";
+import {read, update, updateUser} from "./apiUser";
 import {Redirect} from "react-router-dom";
 import DefaultProfile from '../images/avatar.png'
 
@@ -12,6 +12,7 @@ class EditProfile extends Component {
             id: '',
             name: '',
             email: '',
+            about: '',
             password: '',
             redirectToProfile: false,
             error: '',
@@ -26,7 +27,7 @@ class EditProfile extends Component {
             if (data.error) {
                 this.setState({redirectToProfile: true})
             } else {
-                this.setState({id: data._id, name: data.name, email: data.email, error: ''})
+                this.setState({id: data._id, name: data.name, email: data.email, about: data.about, error: ''})
             }
         });
     };
@@ -37,7 +38,7 @@ class EditProfile extends Component {
         this.init(userId);
     }
 
-    signUpForm = (name, email, password) => (
+    signUpForm = (name, email, about, password) => (
         <form>
             <div className="form-group">
                 <label className="text-muted">Profile Photo</label>
@@ -55,6 +56,12 @@ class EditProfile extends Component {
                 <input onChange={this.handleChange('email')} type="email"
                        className="form-control"
                        value={email}/>
+            </div>
+            <div className="form-group">
+                <label className="text-muted">About</label>
+                <textarea onChange={this.handleChange('about')}
+                          className="form-control"
+                          value={about}/>
             </div>
             <div className="form-group">
                 <label className="text-muted">Password</label>
@@ -87,9 +94,12 @@ class EditProfile extends Component {
             const token = isAuthenticated().token;
             update(userId, token, this.userData).then(data => {
                 if (data.error) this.setState({error: data.error});
-                else this.setState({
-                    redirectToProfile: true
-                })
+                else
+                    updateUser(data, () => {
+                        this.setState({
+                            redirectToProfile: true
+                        })
+                    })
             })
         }
     };
@@ -116,7 +126,7 @@ class EditProfile extends Component {
     };
 
     render() {
-        const {id, name, email, password, redirectToProfile, error, loading} = this.state;
+        const {id, name, email, about, password, redirectToProfile, error, loading} = this.state;
         if (redirectToProfile) {
             return <Redirect to={`/users/${id}`}/>
         }
@@ -144,7 +154,7 @@ class EditProfile extends Component {
                             </div>
 
                             <div className="card-body">
-                                {this.signUpForm(name, email, password)}
+                                {this.signUpForm(name, email, about, password)}
                             </div>
                         </div>
                     </div>
