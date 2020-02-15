@@ -68,7 +68,7 @@ class Profile extends Component {
                                     className='btn btn-raised btn-sm btn-success mr-3' to={`/user/edit/${user._id}`}>
                                     Edit Profile
                                 </Link>
-                                <DeleteUser/>
+                                <DeleteUser userId={user._id}/>
                             </div>
                         )}
                     </div>
