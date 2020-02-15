@@ -7,6 +7,7 @@ import DeleteUser from "./DeleteUser";
 
 class Profile extends Component {
     _isMounted = false;
+
     constructor(props) {
         super(props);
         this.state = {
@@ -18,7 +19,7 @@ class Profile extends Component {
     init = (userId) => {
         const token = isAuthenticated().token;
         read(userId, token).then(data => {
-            if (this._isMounted){
+            if (this._isMounted) {
                 if (data.error) {
                     this.setState({redirectToSignIn: true})
                 } else {
@@ -46,13 +47,16 @@ class Profile extends Component {
     render() {
         const {redirectToSignIn, user} = this.state;
         if (redirectToSignIn) return <Redirect to='/signin'/>;
+        let photoUrl = user._id ? `${process.env.REACT_APP_BASE_URL}/user/photo/${user._id}?${new Date().getTime()}` :
+            DefaultProfile;
         return (
             <div className='container'>
                 <h4 className='mt-4'>Profile</h4>
                 <div className="row">
                     <div className="col-md-6 mt-3">
                         <div className="col-md-6 col-sm-3">
-                            <img className="card-img-top" src={DefaultProfile} alt={user.name}
+                            <img className="card-img-top img-thumbnail" src={photoUrl} alt={user.name}
+                                 onError={i => i.target.src = `${DefaultProfile}`}
                                  style={{width: '100%', height: '15vw', objectFit: 'cover'}}/>
                         </div>
                     </div>

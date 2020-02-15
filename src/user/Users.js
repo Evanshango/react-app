@@ -24,18 +24,21 @@ class Users extends Component {
     renderUsers = (users) => (
         <div className='row mt-3'>
             {users.map((user, i) => (
-                <div className="card col-md-3 col-sm3 mr-3 mb-3" key={i}>
-                    <img className="card-img-top" src={DefaultProfile} alt={user.name}
-                         style={{width: '100%', height: '13vw', objectFit: 'cover'}}/>
-                    <div className="card-body">
-                        <h5 className="card-title">{user.name}</h5>
-                        <p className="card-text">
-                            {user.email}
-                        </p>
-                        <div className="col text-center">
-                            <Link to={`/users/${user._id}`} className="btn btn-raised btn-sm btn-primary">View
-                                Profile
-                            </Link>
+                <div className="col-md-3 col-sm-3 mb-3">
+                    <div className="card" key={i}>
+                        <img className="card-img-top" src={`${process.env.REACT_APP_BASE_URL}/user/photo/${user._id}`}
+                             alt={user.name} onError={i => i.target.src = `${DefaultProfile}`}
+                             style={{width: '100%', height: '15vw', objectFit: 'cover'}}/>
+                        <div className="card-body">
+                            <h5 className="card-title">{user.name}</h5>
+                            <p className="card-text">
+                                {user.email}
+                            </p>
+                            <div className="col text-center">
+                                <Link to={`/users/${user._id}`} className="btn btn-raised btn-sm btn-primary">View
+                                    Profile
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

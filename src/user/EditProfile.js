@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {isAuthenticated} from "../auth";
 import {read, update} from "./apiUser";
 import {Redirect} from "react-router-dom";
+import DefaultProfile from '../images/avatar.png'
 
 class EditProfile extends Component {
 
@@ -69,7 +70,7 @@ class EditProfile extends Component {
     handleChange = inputText => event => {
         this.setState({error: ''});
         let value = inputText === 'photo' ? event.target.files[0] : event.target.value;
-        if (value != null){
+        if (value != null) {
             const fileSize = inputText === 'photo' ? event.target.files[0].size : 0;
             this.userData.set(inputText, value);
             this.setState({[inputText]: value, fileSize})
@@ -120,20 +121,29 @@ class EditProfile extends Component {
             return <Redirect to={`/users/${id}`}/>
         }
 
+        const photoUrl = id ? `${process.env.REACT_APP_BASE_URL}/user/photo/${id}?${new Date().getTime()}` : DefaultProfile;
+
         return (
             <div className='container'>
                 <h4 className='mt-4'>Edit Profile</h4>
                 <div className="row justify-content-center">
                     <div className="col-md-7 col-sm-5">
                         <div className="card">
+                            <div className="alert alert-danger" style={{display: error ? '' : 'none'}}>
+                                {error}
+                            </div>
+                            {loading ? (
+                                <div className='jumbotron text-center'>
+                                    <h6>Loading...</h6>
+                                </div>) : ('')}
+
+                            <div>
+                                <img className="card-img-top" src={photoUrl} alt={name}
+                                     onError={i => i.target.src = `${DefaultProfile}`}
+                                     style={{width: '100%', height: '15vw', objectFit: 'cover'}}/>
+                            </div>
+
                             <div className="card-body">
-                                <div className="alert alert-danger" style={{display: error ? '' : 'none'}}>
-                                    {error}
-                                </div>
-                                {loading ? (
-                                    <div className='jumbotron text-center'>
-                                        <h6>Loading...</h6>
-                                    </div>) : ('')}
                                 {this.signUpForm(name, email, password)}
                             </div>
                         </div>
