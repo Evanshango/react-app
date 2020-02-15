@@ -65,7 +65,7 @@ class Profile extends Component {
                         {isAuthenticated().user && isAuthenticated().user._id === user._id && (
                             <div className="d-inline-block mt-3">
                                 <Link
-                                    className='btn btn-raised btn-sm btn-success mr-3' to={`/user/edit/${user._id}`}>
+                                    className='btn btn-raised btn-sm btn-success mr-3' to={`/users/edit/${user._id}`}>
                                     Edit Profile
                                 </Link>
                                 <DeleteUser userId={user._id}/>
