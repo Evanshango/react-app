@@ -3,7 +3,7 @@ import {isAuthenticated} from "../auth";
 import {createPost} from "./apiPost";
 import {Redirect} from "react-router-dom";
 
-class Post extends Component {
+class NewPost extends Component {
 
     constructor(props) {
         super(props);
@@ -109,4 +109,4 @@ class Post extends Component {
     }
 }
 
-export default Post;
+export default NewPost;

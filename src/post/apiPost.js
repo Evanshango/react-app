@@ -10,3 +10,11 @@ export const createPost = (userId, token, post) => {
         return response.json();
     }).catch(err => console.log(err));
 };
+
+export const listPosts = () => {
+    return fetch(`${process.env.REACT_APP_BASE_URL}/posts`, {
+        method: 'GET',
+    }).then(response => {
+        return response.json();
+    }).catch(err => console.log(err));
+};

@@ -3,7 +3,7 @@ import {list} from "./apiUser";
 import DefaultProfile from '../images/avatar.png'
 import {Link} from "react-router-dom";
 
-class User extends Component {
+class Users extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -57,4 +57,4 @@ class User extends Component {
     }
 }
 
-export default User;
+export default Users;
