@@ -50,6 +50,7 @@ class Users extends Component {
         const {users} = this.state;
         return (
             <div className='container'>
+                <h4 className='mt-5 mb-3'>Users</h4>
                 {this.renderUsers(users)}
             </div>
         );

@@ -29,16 +29,22 @@ const Menu = ({history}) => (
             {isAuthenticated() && (
                 <>
                     <li className="nav-item">
-                        <span className='nav-link'
-                           style={(isActive(history, '/signout'), {cursor: 'pointer', color: '#fff'})}
-                           onClick={() => signout(() => history.push('/'))}>Sign Out
-                        </span>
+                        <Link className='nav-link' to={'/find-people'}
+                              style={(isActive(history, '/find-people'))}>
+                            Find People
+                        </Link>
                     </li>
                     <li className="nav-item">
                         <Link className='nav-link' to={`/users/${isAuthenticated().user._id}`}
-                            style={(isActive(history, `/users/${isAuthenticated().user._id}`))}>
+                              style={(isActive(history, `/users/${isAuthenticated().user._id}`))}>
                             {`${isAuthenticated().user.name}'s profile`}
                         </Link>
+                    </li>
+                    <li className="nav-item">
+                        <span className='nav-link'
+                              style={(isActive(history, '/signout'), {cursor: 'pointer', color: '#fff'})}
+                              onClick={() => signout(() => history.push('/'))}>Sign Out
+                        </span>
                     </li>
                 </>
             )}
