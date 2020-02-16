@@ -4,6 +4,7 @@ import {Link, Redirect} from "react-router-dom";
 import {read} from "./apiUser";
 import DefaultProfile from '../images/avatar.png'
 import DeleteUser from "./DeleteUser";
+import FollowProfileBtn from "./FollowProfileBtn";
 
 class Profile extends Component {
     _isMounted = false;
@@ -11,10 +12,32 @@ class Profile extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: '',
-            redirectToSignIn: false
+            user: {following: [], followers: []},
+            redirectToSignIn: false,
+            following: false,
+            error: ''
         }
     }
+
+    //check follow
+    checkFollow = user => {
+        const token = isAuthenticated();
+        return user.followers.find(follower => {
+            return follower._id === token.user._id
+        })
+    };
+
+    clickFollowBtn = callApi => {
+        const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        callApi(userId, token, this.state.user._id).then(data => {
+            if (data.error){
+                this.setState({error: data.error})
+            } else {
+                this.setState({user: data, following: !this.state.following})
+            }
+        })
+    };
 
     init = (userId) => {
         const token = isAuthenticated().token;
@@ -23,7 +46,8 @@ class Profile extends Component {
                 if (data.error) {
                     this.setState({redirectToSignIn: true})
                 } else {
-                    this.setState({user: data})
+                    let following = this.checkFollow(data);
+                    this.setState({user: data, following})
                 }
             }
         });
@@ -67,14 +91,17 @@ class Profile extends Component {
                                 <p>Email: {user.email}</p>
                                 <p>{`Joined ${new Date(user.created).toDateString()}`}</p>
                             </div>
-                            {isAuthenticated().user && isAuthenticated().user._id === user._id && (
+                            {isAuthenticated().user && isAuthenticated().user._id === user._id ? (
                                 <div className="d-inline-block mt-3 ml-4 mb-4 text-center">
                                     <Link
-                                        className='btn btn-raised btn-sm btn-success mr-5' to={`/users/edit/${user._id}`}>
+                                        className='btn btn-raised btn-sm btn-success mr-5'
+                                        to={`/users/edit/${user._id}`}>
                                         Edit Profile
                                     </Link>
                                     <DeleteUser userId={user._id}/>
                                 </div>
+                            ) : (
+                                <FollowProfileBtn following={this.state.following} onButtonClick={this.clickFollowBtn}/>
                             )}
                         </div>
                     </div>
