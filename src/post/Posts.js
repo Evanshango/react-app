@@ -31,15 +31,18 @@ class Posts extends Component {
                     return (
                         <div className="col-md-4 col-sm-4 mb-3" key={i}>
                             <div className="card" style={{minHeight: '30vw'}}>
-                                <img className="card-img-top" src={`${process.env.REACT_APP_BASE_URL}/post/photo/${post._id}`}
+                                <img className="card-img-top"
+                                     src={`${process.env.REACT_APP_BASE_URL}/post/photo/${post._id}`}
                                      alt={post.title} onError={i => i.target.src = `${DefaultPost}`}
                                      style={{width: '100%', height: '15vw', objectFit: 'cover'}}/>
                                 <div className="card-body">
                                     <b style={{fontSize: '22px'}}>{post.title}</b>
                                     <p className="card-text">{post.body.substring(0, 100)}</p>
                                     <br/>
-                                    <p className='font-italic mark'>
-                                        Posted by <Link to={posterId}>{posterName}{' '}</Link>on{' '}
+                                    <p className=' mark'>
+                                        By <Link className='font-italic' to={posterId}>{posterName}{' '}</Link>
+                                    </p>
+                                    <p className='font-italic' style={{color: 'red'}}>
                                         {new Date(post.created).toDateString()}
                                     </p>
                                     <div className="col text-right">
@@ -60,7 +63,7 @@ class Posts extends Component {
         const {posts} = this.state;
         return (
             <div className='container'>
-                <h4 className='mt-5 mb-3'>Recent Posts</h4>
+                <h4 className='mt-5 mb-3'>{!posts.length ? 'Loading...' : "Recent Posts"}</h4>
                 {this.renderPosts(posts)}
             </div>
         );

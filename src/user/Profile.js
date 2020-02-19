@@ -6,17 +6,15 @@ import DefaultProfile from '../images/avatar.png'
 import DeleteUser from "./DeleteUser";
 import FollowProfileBtn from "./FollowProfileBtn";
 import ProfileTabs from "./ProfileTabs";
+import {postsByUser} from "../post/apiPost";
 
 class Profile extends Component {
-    _isMounted = false;
 
+    _isMounted = false;
     constructor(props) {
         super(props);
         this.state = {
-            user: {following: [], followers: []},
-            redirectToSignIn: false,
-            following: false,
-            error: ''
+            user: {following: [], followers: []}, redirectToSignIn: false, following: false, error: '', posts: []
         }
     }
 
@@ -48,10 +46,22 @@ class Profile extends Component {
                     this.setState({redirectToSignIn: true})
                 } else {
                     let following = this.checkFollow(data);
-                    this.setState({user: data, following})
+                    this.setState({user: data, following});
+                    this.loadPosts(data._id)
                 }
             }
         });
+    };
+
+    loadPosts = userId => {
+        const token = isAuthenticated().token;
+        postsByUser(userId, token).then(data => {
+            if (data.error){
+                console.log(data.error)
+            } else {
+                this.setState({posts: data})
+            }
+        })
     };
 
     componentDidMount() {
@@ -70,7 +80,7 @@ class Profile extends Component {
     }
 
     render() {
-        const {redirectToSignIn, user} = this.state;
+        const {redirectToSignIn, user, posts} = this.state;
         if (redirectToSignIn) return <Redirect to='/signin'/>;
         let photoUrl = user._id ? `${process.env.REACT_APP_BASE_URL}/user/photo/${user._id}?${new Date().getTime()}` :
             DefaultProfile;
@@ -95,6 +105,11 @@ class Profile extends Component {
                             {isAuthenticated().user && isAuthenticated().user._id === user._id ? (
                                 <div className="d-inline-block mt-3 ml-4 mb-4 text-center">
                                     <Link
+                                        className='btn btn-raised btn-sm btn-info mr-5'
+                                        to={`/create-post`}>
+                                        Create Post
+                                    </Link>
+                                    <Link
                                         className='btn btn-raised btn-sm btn-success mr-5'
                                         to={`/users/edit/${user._id}`}>
                                         Edit Profile
@@ -112,7 +127,7 @@ class Profile extends Component {
                         <hr/>
                         <p className="lead ml-3 mt-3 mb-3">{user.about}</p>
                         <hr/>
-                        <ProfileTabs followers={user.followers} following={user.following}/>
+                        <ProfileTabs followers={user.followers} following={user.following} posts = {posts}/>
                     </div>
                 </div>
             </div>

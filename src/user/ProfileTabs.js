@@ -4,13 +4,30 @@ import {Link} from "react-router-dom";
 
 class ProfileTabs extends Component {
     render() {
-        const {following, followers} = this.props;
+        const {following, followers, posts} = this.props;
         return (
             <div>
                 <div className="row">
                     <div className="col-md-4">
                         <h5 className="text-primary mb-3">POSTS</h5>
                         <hr/>
+                        {posts.map((post, i) => (
+                            <div key={i}>
+                                <div>
+                                    <Link to={`/posts/${post._id}`}>
+                                        <img className='float-left mr-2' height='40px' width='40px'
+                                             style={{borderRadius: '50%', border: '1px solid black'}}
+                                             src={`${process.env.REACT_APP_BASE_URL}/post/photo/${post._id}`}
+                                             alt={post.title}
+                                             onError={i => i.target.src = `${DefaultProfile}`}/>
+                                        <div>
+                                            <p className='lead'>{post.title}</p>
+                                        </div>
+                                    </Link>
+                                    <hr/>
+                                </div>
+                            </div>)
+                        )}
                     </div>
                     <div className="col-md-4">
                         <h5 className="text-primary">FOLLOWERS</h5>
@@ -29,7 +46,6 @@ class ProfileTabs extends Component {
                                         </div>
                                     </Link>
                                     <hr/>
-                                    {/*<p style={{clear: 'both'}}>{person.about}</p>*/}
                                 </div>
                             </div>)
                         )}
