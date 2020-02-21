@@ -13,10 +13,14 @@ class Posts extends Component {
 
     componentDidMount() {
         listPosts().then(data => {
-            if (data.error) {
-                console.log(data.error)
-            } else {
-                this.setState({posts: data})
+            try {
+                if (data.error) {
+                    console.log(data.error)
+                } else {
+                    this.setState({posts: data})
+                }
+            } catch (e) {
+                console.log(e)
             }
         })
     }
