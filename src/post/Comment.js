@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {Link} from "react-router-dom";
 import {isAuthenticated} from "../auth";
-import {comment, removePost, uncomment} from "./apiPost";
+import {comment, uncomment} from "./apiPost";
 import DefaultProfile from "../images/avatar.png";
 
 class Comment extends Component {

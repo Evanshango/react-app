@@ -1,18 +1,12 @@
 import React, {Component} from 'react';
-import {Redirect} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {signin, authenticateUser} from "../auth";
 
 class Signin extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {
-            email: '',
-            password: '',
-            error: '',
-            redirectToReferer: false,
-            loading: false
-        }
+        this.state = {email: '', password: '', error: '', redirectToReferer: false, loading: false}
     }
 
     handleChange = (inputText) => event => {
@@ -24,9 +18,7 @@ class Signin extends Component {
         event.preventDefault();
         this.setState({loading: true});
         const {email, password} = this.state;
-        const user = {
-            email, password
-        };
+        const user = {email, password};
         signin(user).then(data => {
             if (data.error) {
                 this.setState({error: data.error, loading: false});
@@ -81,6 +73,12 @@ class Signin extends Component {
                                         <h6>Loading...</h6>
                                     </div>) : ('')}
                                 {this.signInForm(email, password)}
+                                <p>
+                                    <Link to="/forgot-password" className="btn btn-sm btn-danger">
+                                        {" "}
+                                        Forgot Password
+                                    </Link>
+                                </p>
                             </div>
                         </div>
                     </div>
