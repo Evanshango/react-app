@@ -22,7 +22,7 @@ class ProfileTabs extends Component {
                                              onError={i => i.target.src = `${DefaultProfile}`}/>
                                         <div>
                                             <p className='lead'>{post.title}</p>
-                                        </div>
+                                        </div >
                                     </Link>
                                     <hr/>
                                 </div>

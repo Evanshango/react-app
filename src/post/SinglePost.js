@@ -3,10 +3,11 @@ import {likePost, removePost, singlePost, unlikePost} from "./apiPost";
 import DefaultPost from "../images/default.jpg";
 import {Link, Redirect} from "react-router-dom";
 import {isAuthenticated} from "../auth";
+import Comment from "./Comment";
 
 class SinglePost extends Component {
     state = {
-        post: '', redirectToHome: false, like: false, likes: 0, redirectToSignIn: false
+        post: '', redirectToHome: false, like: false, likes: 0, redirectToSignIn: false, comments: []
     };
 
     checkLike = likes => {
@@ -20,9 +21,18 @@ class SinglePost extends Component {
             if (data.error) {
                 console.log(data.error)
             } else {
-                this.setState({post: data, likes: data.likes.length, like: this.checkLike(data.likes)})
+                this.setState({
+                    post: data,
+                    likes: data.likes.length,
+                    like: this.checkLike(data.likes),
+                    comments: data.comments
+                })
             }
         })
+    };
+
+    updateComments = comments => {
+        this.setState({comments: comments})
     };
 
     deletePost = () => {
@@ -45,7 +55,7 @@ class SinglePost extends Component {
     };
 
     likeToggle = () => {
-        if (!isAuthenticated()){
+        if (!isAuthenticated()) {
             this.setState({redirectToSignIn: true});
             return false
         }
@@ -76,10 +86,12 @@ class SinglePost extends Component {
                      alt={post.title} onError={i => i.target.src = `${DefaultPost}`}
                      style={{width: '100%', height: '25vw', objectFit: 'cover'}}/>
                 <div className="card-body">
-                    {like ? (<h6 onClick={this.likeToggle} className='mb-3 text-success'><i
+                    {like ? (<h6 onClick={this.likeToggle} className='mb-3 text-success'
+                                 style={{cursor: 'pointer', color: '#fff'}}><i
                         className="fa fa-thumbs-up text-success bg-dark"
                         style={{padding: '10px', borderRadius: '50%'}}/>{' '}{likes} Likes</h6>) : (
-                        <h6 onClick={this.likeToggle} className='mb-3 text-warning'><i
+                        <h6 onClick={this.likeToggle} className='mb-3 text-warning'
+                            style={{cursor: 'pointer', color: '#fff'}}><i
                             className="fa fa-thumbs-up text-warning bg-dark"
                             style={{padding: '10px', borderRadius: '50%'}}/>{' '}{likes} Likes</h6>
                     )}
@@ -107,7 +119,7 @@ class SinglePost extends Component {
     };
 
     render() {
-        const {post, redirectToHome, redirectToSignIn} = this.state;
+        const {post, redirectToHome, redirectToSignIn, comments} = this.state;
         if (redirectToHome) {
             return <Redirect to={'/'}/>
         } else if (redirectToSignIn) {
@@ -120,6 +132,7 @@ class SinglePost extends Component {
                     <div className='jumbotron text-center'>
                         <h6>Loading...</h6>
                     </div>) : (this.renderPost(post))}
+                <Comment postId={post._id} comments={comments.reverse()} updateComments={this.updateComments}/>
             </div>
         );
     }
